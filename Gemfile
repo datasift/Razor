@@ -10,7 +10,7 @@ gem 'json',        '>= 1.7.7'
 gem 'net-ssh'
 gem 'net-scp'
 gem 'mongo'
-gem 'pg'
+#gem 'pg'
 gem 'daemons'
 gem 'logger'
 
