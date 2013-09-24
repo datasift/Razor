@@ -231,6 +231,7 @@ module ProjectRazor
       def os_boot_script(policy_uuid)
         @result = "Replied with os boot script"
         filepath = template_filepath('os_boot')
+        hostname = get_data.fetch_object_by_uuid(:active,policy_uuid).label
         ERB.new(File.read(filepath)).result(binding)
       end
 
@@ -281,7 +282,8 @@ module ProjectRazor
 
       def generate_kickstart(policy_uuid)
         # TODO: Review hostname
-        hostname = "#{@hostname_prefix}#{@counter.to_s}"
+#        hostname = "#{@hostname_prefix}#{@counter.to_s}"
+        hostname = get_data.fetch_object_by_uuid(:active,policy_uuid).label
         filepath = template_filepath('kickstart')
         ERB.new(File.read(filepath)).result(binding)
       end
