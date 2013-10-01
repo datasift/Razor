@@ -16,77 +16,23 @@ sed -i '1i\127.0.0.1 <%= hostname %> <%= hostname.split('.')[0] %>\' /etc/hosts
 yum -y groupinstall base
 [ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "base_packages_install_ok") %> || curl <%= callback_url("postinstall", "base_packages_install_fail") %>
 
-# EPEL repo
-rpm -ivh http://mirror.bytemark.co.uk/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "epel_repo_install_ok") %> || curl <%= callback_url("postinstall", "epel_repo_install_fail") %>
-
-# RUBY installation
-yum install -y ruby ruby-devel gcc gcc-c++ automake autoconf make rubygems.noarch
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "ruby_install_ok") %> || curl <%= callback_url("postinstall", "ruby_install_fail") %>
-
-# RUBYGEMS installation
-cd /tmp
-curl http://production.cf.rubygems.org/rubygems/rubygems-1.8.25.tgz -O
-tar zxf rubygems-1.8.25.tgz
-cd rubygems-1.8.25
-ruby setup.rb --no-format-executable
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "rubygems_install_ok") %> || curl <%= callback_url("postinstall", "rubygems_install_fail") %>
-
-# If the date is not within 15 minutes (which can happen with VMs), chef will not run
-yum install -y ntpdate
-ntpdate time.dedipower.com
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "ntp_install_ok") %> || curl <%= callback_url("postinstall", "ntp_install_fail") %>
-
-# pin version to 1.8.25 until we support 2.0.0+
-gem update --system "1.8.25"
-gem update
-gem install moneta --version 0.6.0 --no-rdoc --no-ri --verbose
-gem install net-ssh-gateway --version 1.1.0 --no-rdoc --no-ri --verbose
-gem install net-ssh-multi --version 1.1.0 --no-rdoc --no-ri --verbose
-gem install net-ssh --version 2.1.4 --no-rdoc --no-ri --verbose
-gem install ohai --no-rdoc --no-ri --verbose
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "chef_install_ok") %> || curl <%= callback_url("postinstall", "chef_install_fail") %>
-gem install chef --version 0.10.4 --no-rdoc --no-ri --verbose
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "ohai_install_ok") %> || curl <%= callback_url("postinstall", "ohai_install_fail") %>
-yes | gem uninstall chef -v ">11.0.0"
-yes | gem uninstall moneta -v ">0.7.0"
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "gems_install_ok") %> || curl <%= callback_url("postinstall", "gems_install_fail") %>
-
-
 # Get current IP
-node_ip=`ohai ipaddress`
-node_ip=`echo $node_ip | cut -f 2 -d \"`
 
-# Set static IP
-networkscriptsdir='/etc/sysconfig/network-scripts'
-GATEWAY='185.20.4.129'
-NETMASK='255.255.255.224'
-BROADCAST='185.20.4.159'
-DNS1='81.29.64.60'
-
-for i in `ls $networkscriptsdir/ifcfg-*`; do
-  if grep -q <%= hostname %> $i && grep -q BOOTPROTO=\"dhcp\" $i
-  then
-    sed -i /HOSTNAME/d $i
-    sed -i /IPV6INIT/d $i
-    sed -i /MTU/d $i
-    sed -i /BOOTPROTO/d $i
-    echo GATEWAY=\"$GATEWAY\" >> $i
-    echo IPADDR=\"$node_ip\" >> $i
-    echo NETMASK=\"$NETMASK\" >> $i
-    echo BROADCAST=\"$BROADCAST\" >> $i
-    echo DNS1=\"$DNS1\" >> $i
-    echo BOOTPROTO=\"static\" >> $i
+for i in `ls /sys/class/net/`
+do
+  if test "X$i" == "Xlo"; then
+    continue
+  fi
+  if ! `ip addr li $i | grep -q inet`; then
+    continue
+  else
+    IP=`ip addr li $i | sed -ne "s/.*inet \(.*\)\/.*/\1/p"`
+    IP=`echo $IP`
   fi
 done
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "set_static_ip_ok") %> || curl <%= callback_url("postinstall", "set_static_ip_fail") %>
-
-# Resolv conf
-echo "search sysms.net\nnameserver 81.29.64.60\nnameserver 89.151.64.70" > /etc/resolv.conf
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "set_resolvconf_ok") %> || curl <%= callback_url("postinstall", "set_resolvcon_fail") %>
 
 # Send IP up
-curl <%= callback_url("postinstall", "send_ips") %>/$node_ip
+curl <%= callback_url("postinstall", "send_ips") %>/$IP
 # get final script
 curl <%= callback_url("postinstall", "boot") %> | sh
 # Send final state
