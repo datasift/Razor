@@ -200,5 +200,14 @@ module ProjectRazor::BrokerPlugin
         %{echo "#{BROKER_SUCCESS_MSG}"}
       ].join("\n")
     end
+
+    def config
+      ProjectRazor.config
+    end
+
+    def callback_url(namespace, action)
+      "http://#{config.image_svc_host}:#{config.api_port}/razor/api/policy/callback/#{@options[:metadata][:razor_active_model_uuid]}/#{namespace}/#{action}"
+    end
+
   end
 end
