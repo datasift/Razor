@@ -17,11 +17,24 @@ end
 def putsok
   '['+''.colorize('OK', {:foreground => :green, :extra => :bold})+']'
 end
-def putwarning
+def putswarning
   '['+''.colorize('WARNING', {:foreground => :yellow, :extra => :bold})+']'
 end
 def putscyan(string)
   ''.colorize(string, {:foreground => :cyan, :extra => :bold})
+end
+
+def yesno
+  puts "Continue? [y/n]"
+  yn = STDIN.gets.chomp()
+  if yn == 'y' or yn == 'Y'
+    return 0
+  elsif yn == 'n' or yn == 'N'
+    puts "You chose '#{putscyan('n')}', nothing to do."
+    exit 0
+  else
+    yesno
+  end
 end
 
 def get_object_uuid(razor_api,slice,resource,value)
@@ -119,13 +132,20 @@ end
 #end
 
 puts "Razor provision:"
-puts "- fqdn: #{putscyan(options[:node])}"
+if options[:node].split('.').length > 1
+  puts "- fqdn: #{putscyan(options[:node])}"
+else
+  puts "- fqdn: #{putscyan(options[:node])} - not fqdn #{putswarning}"
+end
 puts "- mac: #{putscyan(options[:mac])}"
 puts "- os: #{putscyan(options[:os])}"
 puts "- chef version: #{putscyan(options[:chef])}"
 puts "- chef environment: #{putscyan(options[:env])}"
 puts "- chef base role: #{putscyan(options[:role])}"
 puts 
+
+yesno
+
 print 'Checking model...'
 if model_uuid = get_object_uuid(razor_api,'model','label',options[:os])
   puts '...model exists '+putsok
