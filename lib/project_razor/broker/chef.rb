@@ -109,7 +109,8 @@ module ProjectRazor::BrokerPlugin
       @run_script_str = ""
       begin
         Net::SSH.start(options[:ipaddress], options[:username], { :password => options[:password], :user_known_hosts_file => '/dev/null'} ) do |session|
-          @run_script_str << session.exec!("bash -c '#{@chef_script}' 2>&1 | tee /tmp/chef_bootstrap.log")
+          session.exec!("bash -c '#{@chef_script}' 2>&1 | tee /tmp/chef_bootstrap.log")
+          @run_script_str << session.exec!("tail -n 10 /tmp/chef_bootstrap.log")
         end
       rescue => e
         logger.error "Chef bootstrap error: #{e}"
