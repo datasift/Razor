@@ -88,22 +88,22 @@ optparse = OptionParser.new do |opts|
   end
   
   options[:os] = 'centos6'
-  opts.on('-o', '--os-version OS', ['centos6'], 'Operating system. Supported: centos6. Default: centos6.') do |o|
+  opts.on('-o', '--os-version OS', ['centos6'], "Operating system. Default: #{options[:os]}.") do |o|
     options[:os] = o
   end
 
   options[:chef] = '10'
-  opts.on('-c', '--chef-version CHEF', ['10'], 'Chef version. Supported: 10. Default: 10.') do |c|
+  opts.on('-c', '--chef-version CHEF', ['10','11'], "Chef version. Default: #{options[:chef]}.") do |c|
     options[:chef] = c
   end
   
   options[:env] = '_default'
-  opts.on('-e', '--environment ENV', ['_default'], 'Chef environment. Supported: _default. Default: _default.') do |e|
+  opts.on('-e', '--environment ENV', ['_default','staging','newstaging','production'], "Chef environment. Default: #{options[:env]}.") do |e|
     options[:env] = e
   end
 
-  options[:role] = 'base_reh'
-  opts.on('-b', '--base-role ROLE', ['base', 'base_reh'], 'Base role to apply. Currently supported: base, base_reh. Default: base_reh.') do |r|
+  options[:role] = 'base'
+  opts.on('-b', '--base-role ROLE', /base.*/, "Base role to apply. Default: #{options[:role]}.") do |r|
     options[:role] = r
   end
 end

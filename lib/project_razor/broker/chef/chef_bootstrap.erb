@@ -28,6 +28,7 @@ gem install moneta --version 0.6.0 --no-rdoc --no-ri --verbose
 gem install net-ssh-gateway --version 1.1.0 --no-rdoc --no-ri --verbose
 gem install net-ssh-multi --version 1.1.0 --no-rdoc --no-ri --verbose
 gem install net-ssh --version 2.1.4 --no-rdoc --no-ri --verbose
+gem install mime-types --version 1.25 --no-rdoc --no-ri --verbose
 gem install ohai --no-rdoc --no-ri --verbose
 [ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "ohai_install_ok") %> || curl <%= callback_url("postinstall", "ohai_install_fail") %>
 <% if @chef_version == '10' %>
