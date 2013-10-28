@@ -29,8 +29,8 @@ module ProjectRazor::BrokerPlugin
         },
         "@chef_version" => {
           :default      => "",
-          :example      => "10.16.2",
-          :validation   => '^[0-9]+\.[0-9]+\.[0-9]+(\.[a-zA-Z0-9\.]+)?$',
+          :example      => "10",
+          :validation   => '^[0-9]+$',
           :required     => true,
           :description  => "the Chef version (used in gem install)."
         },
