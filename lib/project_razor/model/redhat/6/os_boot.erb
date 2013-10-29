@@ -15,6 +15,7 @@ sed -i '1i\127.0.0.1 <%= hostname %> <%= hostname.split('.')[0] %>\' /etc/hosts
 yum -y groupinstall base
 [ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "base_packages_install_ok") %> || curl <%= callback_url("postinstall", "base_packages_install_fail") %>
 
+curl <%= callback_url("postinstall", "configure_static_ip_...") %>
 # SETUP STATIC IP
 # /etc/sysconfig/network
 if ! grep -q GATEWAY /etc/sysconfig/network
@@ -52,6 +53,7 @@ do
 done
 
 service network restart
+curl <%= callback_url("postinstall", "static_ip_ok") %> || curl <%= callback_url("postinstall", "base_packages_install_fail") %>
 
 # Send IP up
 curl <%= callback_url("postinstall", "send_ips") %>/$IP
