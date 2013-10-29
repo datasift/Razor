@@ -15,8 +15,14 @@ sed -i '1i\127.0.0.1 <%= hostname %> <%= hostname.split('.')[0] %>\' /etc/hosts
 yum -y groupinstall base
 [ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "base_packages_install_ok") %> || curl <%= callback_url("postinstall", "base_packages_install_fail") %>
 
-# Get current IP
-
+# SETUP STATIC IP
+# /etc/sysconfig/network
+if ! grep -q GATEWAY /etc/sysconfig/network
+then
+  GATEWAY=`ip r | sed -ne "/default/s/.* \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\) .*/\1/p"`
+  echo GATEWAY=$GATEWAY >> /etc/sysconfig/network
+fi
+# network-script
 for i in `ls /sys/class/net/`
 do
   if test "X$i" == "Xlo"; then
@@ -25,10 +31,27 @@ do
   if ! `ip addr li $i | grep -q inet`; then
     continue
   else
+    # network-script
+    sed -i -e '/BOOTPROTO/d' /etc/sysconfig/network-scripts/ifcfg-$i
+    sed -i -e '/DHCP_HOSTNAME/d' /etc/sysconfig/network-scripts/ifcfg-$i
+    sed -i -e '/IPADDR/d' /etc/sysconfig/network-scripts/ifcfg-$i
+    sed -i -e '/NETMASK/d' /etc/sysconfig/network-scripts/ifcfg-$i
+    sed -i -e '/DNS/d' /etc/sysconfig/network-scripts/ifcfg-$i
+    sed -i -e '/GATEWAY/d' /etc/sysconfig/network-scripts/ifcfg-$i
+    echo 'BOOTPROTO="static"' >> /etc/sysconfig/network-scripts/ifcfg-$i
     IP=`ip addr li $i | sed -ne "s/.*inet \(.*\)\/.*/\1/p"`
     IP=`echo $IP`
+    NETMASK=`ifconfig $i | awk -F Mask: '/Mask:/ {print $2}'`
+    DNS1=`awk '/nameserver/ {print $2}' /etc/resolv.conf | head -n1`
+    GATEWAY=`ip r | sed -ne "/default/s/.* \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\) .*/\1/p"`
+    echo "IPADDR=\"$IP\"" >> /etc/sysconfig/network-scripts/ifcfg-$i
+    echo "NETMASK=\"$NETMASK\"" >> /etc/sysconfig/network-scripts/ifcfg-$i
+    echo "DNS1=\"$DNS1\"" >> /etc/sysconfig/network-scripts/ifcfg-$i
+    echo "GATEWAY=\"$GATEWAY\"" >> /etc/sysconfig/network-scripts/ifcfg-$i
   fi
 done
+
+service network restart
 
 # Send IP up
 curl <%= callback_url("postinstall", "send_ips") %>/$IP
