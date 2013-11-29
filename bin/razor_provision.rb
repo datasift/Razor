@@ -92,11 +92,6 @@ optparse = OptionParser.new do |opts|
     options[:os] = o
   end
 
-  options[:chef] = '11'
-  opts.on('-c', '--chef-version CHEF', ['11'], "Chef version. Default: #{options[:chef]}.") do |c|
-    options[:chef] = c
-  end
-  
   options[:env] = '_default'
   opts.on('-e', '--environment ENV', ['_default','staging','newstaging','production'], "Chef environment. Default: #{options[:env]}.") do |e|
     options[:env] = e
@@ -139,7 +134,6 @@ else
 end
 puts "- mac: #{putscyan(options[:mac])}"
 puts "- os: #{putscyan(options[:os])}"
-puts "- chef version: #{putscyan(options[:chef])}"
 puts "- chef environment: #{putscyan(options[:env])}"
 puts "- chef base role: #{putscyan(options[:role])}"
 puts 
@@ -155,7 +149,7 @@ else
 end
 
 #gen broker string
-broker_string = "#{options[:chef]}-#{options[:env]}-#{options[:role]}"
+broker_string = "#{options[:env]}-#{options[:role]}"
 print 'Checking broker...'
 if broker_uuid = get_object_uuid(razor_api,'broker','name',broker_string)
   puts '...broker exists '+putsok

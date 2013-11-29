@@ -129,7 +129,6 @@ config[:nodes].each do |key,value|
 end
 puts
 puts "- os: #{putscyan(config[:os])}"
-puts "- chef version: #{putscyan(config[:chef])}"
 puts "- chef environment: #{putscyan(config[:environment])}"
 puts "- chef base role: #{putscyan(config[:baserole])}"
 puts 
@@ -165,7 +164,7 @@ else
 end
 
 #gen broker string
-broker_string = "#{config[:chef]}-#{config[:environment]}-#{config[:baserole]}"
+broker_string = "#{config[:environment]}-#{config[:baserole]}"
 print 'Checking broker...'
 if broker_uuid = get_object_uuid(razor_api,'broker','name',broker_string)
   puts '...broker exists '+putsok
