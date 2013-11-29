@@ -27,13 +27,6 @@ module ProjectRazor::BrokerPlugin
           :required     => true,
           :description  => "the URL for the Chef server."
         },
-        "@chef_version" => {
-          :default      => "",
-          :example      => "10",
-          :validation   => '^[0-9]+$',
-          :required     => true,
-          :description  => "the Chef version (used in gem install)."
-        },
         "@validation_key" => {
           :default      => "",
           :example      => "-----BEGIN RSA PRIVATE KEY-----\\nMIIEpAIBAA...",
@@ -55,13 +48,6 @@ module ProjectRazor::BrokerPlugin
           :validation   => '^[\w._-]+$',
           :required     => true,
           :description  => "the Chef environment in which the chef-client will run."
-        },
-        "@install_sh_url" => {
-          :default      => "http://opscode.com/chef/install.sh",
-          :example      => "http://mirror.example.com/install.sh",
-          :validation   => URI::regexp.to_s,
-          :required     => true,
-          :description  => "the Omnibus installer script URL."
         },
         "@chef_client_path" => {
           :default      => "chef-client",
@@ -93,8 +79,8 @@ module ProjectRazor::BrokerPlugin
       if @is_template
         return @plugin.to_s, @description.to_s
       else
-        return @name, @user_description, @plugin.to_s, @uuid, @chef_server_url, @chef_version, Digest::MD5.hexdigest(@validation_key),
-               @validation_client_name, @bootstrap_environment, @install_sh_url, @chef_client_path, @base_run_list
+        return @name, @user_description, @plugin.to_s, @uuid, @chef_server_url, Digest::MD5.hexdigest(@validation_key),
+               @validation_client_name, @bootstrap_environment, @chef_client_path, @base_run_list
       end
     end
 
@@ -149,7 +135,7 @@ module ProjectRazor::BrokerPlugin
 
     BROKER_SUCCESS_MSG = "Razor Chef bootstrap completed."
 
-    attr_reader :install_sh_url, :chef_version, :validation_key, :base_run_list
+    attr_reader :validation_key, :base_run_list
 
     def config_content
       <<-CONFIG.gsub(/^ +/, '')
