@@ -92,8 +92,8 @@ optparse = OptionParser.new do |opts|
     options[:os] = o
   end
 
-  options[:chef] = '10'
-  opts.on('-c', '--chef-version CHEF', ['10','11'], "Chef version. Default: #{options[:chef]}.") do |c|
+  options[:chef] = '11'
+  opts.on('-c', '--chef-version CHEF', ['11'], "Chef version. Default: #{options[:chef]}.") do |c|
     options[:chef] = c
   end
   
