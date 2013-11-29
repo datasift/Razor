@@ -4,43 +4,14 @@
 rpm -ivh http://mirror.bytemark.co.uk/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
 [ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "epel_repo_install_ok") %> || curl <%= callback_url("postinstall", "epel_repo_install_fail") %>
 
-# RUBY installation
-yum install -y ruby ruby-devel gcc gcc-c++ automake autoconf make rubygems.noarch
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "ruby_install_ok") %> || curl <%= callback_url("postinstall", "ruby_install_fail") %>
-
-# RUBYGEMS installation
-cd /tmp
-curl http://production.cf.rubygems.org/rubygems/rubygems-1.8.25.tgz -O
-tar zxf rubygems-1.8.25.tgz
-cd rubygems-1.8.25
-ruby setup.rb --no-format-executable
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "rubygems_install_ok") %> || curl <%= callback_url("postinstall", "rubygems_install_fail") %>
-
 # If the date is not within 15 minutes (which can happen with VMs), chef will not run
 yum install -y ntpdate
 ntpdate time.dedipower.com
 [ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "ntp_install_ok") %> || curl <%= callback_url("postinstall", "ntp_install_fail") %>
 
-# pin version to 1.8.25 until we support 2.0.0+
-gem update --system "1.8.25"
-gem update
-gem install moneta --version 0.6.0 --no-rdoc --no-ri --verbose
-gem install net-ssh-gateway --version 1.1.0 --no-rdoc --no-ri --verbose
-gem install net-ssh-multi --version 1.1.0 --no-rdoc --no-ri --verbose
-gem install net-ssh --version 2.1.4 --no-rdoc --no-ri --verbose
-gem install mime-types --version 1.25 --no-rdoc --no-ri --verbose
-gem install ohai --no-rdoc --no-ri --verbose
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "ohai_install_ok") %> || curl <%= callback_url("postinstall", "ohai_install_fail") %>
-<% if @chef_version == '10' %>
-gem install chef --version 0.10.4 --no-rdoc --no-ri --verbose
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "chef_install_ok") %> || curl <%= callback_url("postinstall", "chef_install_fail") %>
-yes | gem uninstall chef -v ">11.0.0"
-yes | gem uninstall moneta -v ">0.7.0"
-<% else %>
-gem install chef --no-rdoc --no-ri --verbose
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "chef_install_ok") %> || curl <%= callback_url("postinstall", "chef_install_fail") %>
-<% end %>
-[ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "gems_install_ok") %> || curl <%= callback_url("postinstall", "gems_install_fail") %>
+#install chef package
+wget -O /tmp/chef-11.8.0-1.el6.x86_64.rpm https://opscode-omnibus-packages.s3.amazonaws.com/el/6/x86_64/chef-11.8.0-1.el6.x86_64.rpm
+rpm -ivh /tmp/chef-11.8.0-1.el6.x86_64.rpm
 
 ## run chef
 mkdir -p /etc/chef
