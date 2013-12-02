@@ -109,7 +109,7 @@ rescue
 end
 
 config[:nodes].each do |key,value|
-  if not value[:mac] =~ /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/
+  if not value[:mac].upcase =~ /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/
     puts putserror+' Wrong '+putscyan(key.to_s)+' mac address format.'
     exit 1
   end
@@ -209,11 +209,11 @@ config[:nodes].each do |key,value|
     json_hash = { 
       "key"     => "macaddres"+key,
       "compare" => "equal",
-      "value"   => value[:mac],
+      "value"   => value[:mac].upcase,
       "invert"  => "false"
     }
     create_object(razor_api,"tag/#{tag_uuid}/matcher",json_hash)
-    puts " and matcher '#{putscyan('macaddres'+key)}' => '#{putscyan(value[:mac])}' #{putsok}"
+    puts " and matcher '#{putscyan('macaddres'+key)}' => '#{putscyan(value[:mac].upcase)}' #{putsok}"
   end
 
   # create policy
