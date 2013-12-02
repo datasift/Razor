@@ -57,6 +57,14 @@ module ProjectRazor
                 :required    => true,
                 :description => "root password (> 8 characters)"
             },
+            "@hadoop" => {
+                :default     => "false",
+                :example     => "true",
+                :validation  => '(false|true)',
+                :required    => true,
+                :description => "true to create model for hadoop nodes"
+            },
+
         }
       end
 
