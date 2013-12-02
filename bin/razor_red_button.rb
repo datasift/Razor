@@ -129,6 +129,7 @@ config[:nodes].each do |key,value|
 end
 puts
 puts "- os: #{putscyan(config[:os])}"
+puts "- hadoop: #{putscyan(config[:hadoop])}"
 puts "- chef environment: #{putscyan(config[:environment])}"
 puts "- chef base role: #{putscyan(config[:baserole])}"
 puts 
@@ -156,7 +157,8 @@ else
 end
 
 print 'Checking model...'
-if model_uuid = get_object_uuid(razor_api,'model','label',config[:os])
+model_name = config[:hadoop] == 'true' ? config[:os]+'_hdp' : config[:os]
+if model_uuid = get_object_uuid(razor_api,'model','label',model_name)
   puts '...model exists '+putsok
 else
   puts "...model #{putscyan(config[:os])} doesn't exist in razor "+ putserror

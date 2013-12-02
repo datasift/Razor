@@ -1,0 +1,18 @@
+{
+  "os": "centos6",
+  "environment": "_default",
+  "hadoop": "false",
+  "baserole": "base_pulsant_tvhc1_b22",
+  "nodes": {
+    "host1": {
+      "hostname": "host1.sysms.net",
+      "ip":       "46.236.26.98",
+      "mac":      "AA:BB:CC:11:22:33"
+    },
+    "host2": {
+      "hostname": "host2.sysms.net",
+      "ip":       "46.236.26.99",
+      "mac":      "AA:BB:CC:11:22:34"
+    }
+  }
+}
