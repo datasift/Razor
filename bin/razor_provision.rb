@@ -101,6 +101,12 @@ optparse = OptionParser.new do |opts|
   opts.on('-b', '--base-role ROLE', /base.*/, "Base role to apply. Default: #{options[:role]}.") do |r|
     options[:role] = r
   end
+
+  options[:hadoop] = false
+  opts.on('-p', '--hadoop', "Enable partitioning for hadoop nodes. Default: #{options[:hadoop]}.") do
+    options[:hadoop] = true
+  end
+
 end
 
 begin
@@ -134,6 +140,7 @@ else
 end
 puts "- mac: #{putscyan(options[:mac])}"
 puts "- os: #{putscyan(options[:os])}"
+puts "- hadoop: #{putscyan(options[:hadoop])}"
 puts "- chef environment: #{putscyan(options[:env])}"
 puts "- chef base role: #{putscyan(options[:role])}"
 puts 
@@ -141,10 +148,11 @@ puts
 yesno
 
 print 'Checking model...'
-if model_uuid = get_object_uuid(razor_api,'model','label',options[:os])
+model_name = option[:hadoop] ? options[:os] : options[:os]+'_'+option[:hadoop]
+if model_uuid = get_object_uuid(razor_api,'model','label',model_name)
   puts '...model exists '+putsok
 else
-  puts "...model #{putscyan(options[:os])} doesn't exist in razor "+ putserror
+  puts "...model #{putscyan(model_name)} doesn't exist in razor "+ putserror
   exit 1
 end
 
