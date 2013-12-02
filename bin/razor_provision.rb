@@ -103,7 +103,7 @@ optparse = OptionParser.new do |opts|
   end
 
   options[:hadoop] = false
-  opts.on('-p', '--hadoop', "Enable partitioning for hadoop nodes. Default: #{options[:hadoop]}.") do
+  opts.on('-h', '--hadoop', "Enable partitioning for hadoop nodes. Default: #{options[:hadoop]}.") do
     options[:hadoop] = true
   end
 
@@ -140,7 +140,7 @@ else
 end
 puts "- mac: #{putscyan(options[:mac])}"
 puts "- os: #{putscyan(options[:os])}"
-puts "- hadoop: #{putscyan(options[:hadoop])}"
+puts "- hadoop: #{putscyan(options[:hadoop].to_s)}"
 puts "- chef environment: #{putscyan(options[:env])}"
 puts "- chef base role: #{putscyan(options[:role])}"
 puts 
@@ -148,7 +148,7 @@ puts
 yesno
 
 print 'Checking model...'
-model_name = option[:hadoop] ? options[:os] : options[:os]+'_'+option[:hadoop]
+model_name = options[:hadoop] ? options[:os]+'_hdp' : options[:os]
 if model_uuid = get_object_uuid(razor_api,'model','label',model_name)
   puts '...model exists '+putsok
 else
