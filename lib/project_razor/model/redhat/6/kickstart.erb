@@ -21,7 +21,7 @@ bootloader --location=mbr --driveorder=sda --append=crashkernel=auto rhgb quiet
 zerombr
 clearpart --all --initlabel
 <% if @hadoop == 'true' %>
-part / --fstype=ext4 --asprimary --size=50000 --ondisk=sda
+part / --fstype=ext4 --asprimary --size=40000 --ondisk=sda
 <% else %>
 part / --fstype=ext4 --asprimary --size=1 --grow
 <% end %>
