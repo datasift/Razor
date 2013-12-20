@@ -10,7 +10,8 @@ ntpdate time.dedipower.com
 [ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "ntp_install_ok") %> || curl <%= callback_url("postinstall", "ntp_install_fail") %>
 
 #install chef package
-wget -O /tmp/chef-11.8.0-1.el6.x86_64.rpm https://opscode-omnibus-packages.s3.amazonaws.com/el/6/x86_64/chef-11.8.0-1.el6.x86_64.rpm
+#wget -O /tmp/chef-11.8.0-1.el6.x86_64.rpm https://opscode-omnibus-packages.s3.amazonaws.com/el/6/x86_64/chef-11.8.0-1.el6.x86_64.rpm
+wget -O /tmp/chef-11.8.0-1.el6.x86_64.rpm HEY_CHEF_PUT_URL_TO_CHEF_RPM_HERE
 rpm -ivh /tmp/chef-11.8.0-1.el6.x86_64.rpm
 
 ## run chef

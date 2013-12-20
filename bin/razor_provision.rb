@@ -91,8 +91,8 @@ optparse = OptionParser.new do |opts|
     options[:os] = o
   end
 
-  options[:env] = '_default'
-  opts.on('-e', '--environment ENV', ['_default','staging','newstaging','production'], "Chef environment. Default: #{options[:env]}.") do |e|
+  options[:env] = 'unassigned'
+  opts.on('-e', '--environment ENV', ['_default','staging','newstaging','production','unassigned'], "Chef environment. Default: #{options[:env]}.") do |e|
     options[:env] = e
   end
 
