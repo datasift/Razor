@@ -1,6 +1,5 @@
 #!/opt/chef/embedded/bin/ruby
 
-require 'rubygems'
 require 'net/http'
 require 'json'
 require 'colored'
