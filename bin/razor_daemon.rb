@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/opt/chef/embedded/bin/ruby
 #
 # A daemon that is used to start, stop, restart, etc. the underlying Node.js
 # instances that make up Razor and to ensure that they stay running as long
@@ -9,7 +9,6 @@
 # running under Razor, but that functionality is, as of now, unimplemented.
 #
 
-require 'rubygems'
 require 'daemons'
 require 'json'
 require 'pathname'

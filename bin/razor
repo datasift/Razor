@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/opt/chef/embedded/bin/ruby
 #
 # CLI Control for ProjectRazor
 # Format will be 'project_razor [module namespace] [module args{}]'
