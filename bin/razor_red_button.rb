@@ -131,6 +131,7 @@ puts "- os: #{putscyan(config[:os])}"
 puts "- hadoop: #{putscyan(config[:hadoop])}"
 puts "- chef environment: #{putscyan(config[:environment])}"
 puts "- chef base role: #{putscyan(config[:baserole])}"
+puts "- location: #{putscyan(config[:location])}"
 puts 
 
 yesno
@@ -144,7 +145,7 @@ end
 if File::exists?(options[:dnsmasq])
   lines = IO.readlines(options[:dnsmasq]).map { |line| line if line !~ /#{regexp_array.join('|')}/ }
   config[:nodes].each do |key,value|
-    lines << value[:mac].downcase+',set:razor,'+value[:ip]+','+value[:hostname]
+    lines << value[:mac].downcase+',set:'+config[:location]+',set:razor,'+value[:ip]+','+value[:hostname]
   end
   File.open(options[:dnsmasq], 'w') do |file|
     file.puts lines.compact

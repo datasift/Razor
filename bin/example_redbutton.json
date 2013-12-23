@@ -3,6 +3,7 @@
   "environment": "unassigned",
   "hadoop": "false",
   "baserole": "base_pulsant_tvhc1_b22",
+  "location": "b22",
   "nodes": {
     "host1": {
       "hostname": "host1.sysms.net",
