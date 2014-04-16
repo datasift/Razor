@@ -23,6 +23,11 @@ clearpart --all --initlabel
 <% if @hadoop == 'true' %>
 part / --fstype=ext4 --asprimary --size=40000 --ondisk=sda
 <% else %>
+<%if disks_count.to_i == 2 %>
+part raid.01 --asprimary --size=1 --grow --ondisk=sda
+part raid.02 --asprimary --size=1 --grow --ondisk=sdb
+raid / --fstype=ext4 --level=1 --device=md0 raid.01 raid.02
+<% else %>
 part / --fstype=ext4 --asprimary --size=1 --grow
 <% end %>
 # reboot automatically

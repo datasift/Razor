@@ -292,6 +292,8 @@ module ProjectRazor
         # TODO: Review hostname
 #        hostname = "#{@hostname_prefix}#{@counter.to_s}"
         hostname = get_data.fetch_object_by_uuid(:active,policy_uuid).label
+        get_node_uuid = get_data.fetch_object_by_uuid(:active,policy_uuid).node_uuid
+        disks_count = get_data.fetch_object_by_uuid(:node,get_node_uuid).attributes_hash["mk_hw_disk_count"]
         filepath = template_filepath('kickstart')
         ERB.new(File.read(filepath)).result(binding)
       end
