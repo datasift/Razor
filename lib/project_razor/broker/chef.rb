@@ -177,7 +177,8 @@ module ProjectRazor::BrokerPlugin
     def first_boot
       {
         :razor_metadata => @options[:metadata],
-        :razor_attributes => razor_detail_data,
+        #we dont need detailed attributes from razor
+        #:razor_attributes => razor_detail_data,
         :run_list => run_list
       }
     end
