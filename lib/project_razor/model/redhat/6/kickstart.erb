@@ -22,6 +22,9 @@ zerombr
 clearpart --all --initlabel
 <% if @hadoop == 'true' %>
 part / --fstype=ext4 --asprimary --size=40000 --ondisk=sda
+<% disks_count.to_i.times do |i| %>
+part /hadoop/sd<%= ("a".."z").to_a[i] %> --fstype=ext3 --asprimary --size=1 --grow --ondisk=sd<%= ("a".."z").to_a[i] %> --fsoptions="defaults"
+<% end %>
 <% else %>
 <%if disks_count.to_i == 2 %>
 part raid.01 --asprimary --size=1 --grow --ondisk=sda
@@ -41,6 +44,9 @@ reboot
 %end
 
 %post --log=/root/razor-post.log
+<% if @hadoop == 'true' %>
+sed -i '/hadoop/s/[0-9] [0-9]$/0 0/g' /etc/fstab
+<% end %>
 curl <%= api_svc_uri %>/policy/callback/<%= policy_uuid %>/kickstart/end
 curl -o /tmp/razor_postinstall.sh <%= api_svc_uri %>/policy/callback/<%= policy_uuid %>/postinstall/inject
 echo bash /tmp/razor_postinstall.sh >> /etc/rc.local
