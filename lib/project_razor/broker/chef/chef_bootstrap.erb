@@ -2,6 +2,7 @@
 
 # EPEL repo
 rpm -ivh http://mirror.bytemark.co.uk/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
+sed -i "s/mirrorlist=https/mirrorlist=http/" /etc/yum.repos.d/epel.repo
 [ "$?" -eq 0 ] && curl <%= callback_url("postinstall", "epel_repo_install_ok") %> || curl <%= callback_url("postinstall", "epel_repo_install_fail") %>
 
 # If the date is not within 15 minutes (which can happen with VMs), chef will not run
