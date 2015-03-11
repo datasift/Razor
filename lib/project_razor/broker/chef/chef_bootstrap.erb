@@ -15,6 +15,9 @@ ntpdate time.dedipower.com
 wget -O /tmp/chef-11.8.0-1.el6.x86_64.rpm HEY_CHEF_PUT_URL_TO_CHEF_RPM_HERE
 rpm -ivh /tmp/chef-11.8.0-1.el6.x86_64.rpm
 
+## add chef11.sysms.net to /etc/hosts
+echo 46.236.16.252 chef11.sysms.net >> /etc/hosts
+
 ## run chef
 mkdir -p /etc/chef
 

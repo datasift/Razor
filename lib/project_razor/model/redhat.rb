@@ -64,7 +64,13 @@ module ProjectRazor
                 :required    => true,
                 :description => "true to create model for hadoop nodes"
             },
-
+            "@software_raid" => {
+                :default     => "true",
+                :example     => "false",
+                :validation  => '(false|true)',
+                :required    => true,
+                :description => "set it to false if you don't want to create software raid"
+            },
         }
       end
 

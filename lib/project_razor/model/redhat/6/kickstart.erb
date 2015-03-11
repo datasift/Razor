@@ -20,20 +20,24 @@ bootloader --location=mbr --driveorder=sda --append=crashkernel=auto rhgb quiet
 # not guaranteed to work
 zerombr
 clearpart --all --initlabel
+
 <% if @hadoop == 'true' %>
 part / --fstype=ext4 --asprimary --size=40000 --ondisk=sda
 <% disks_count.to_i.times do |i| %>
 part /hadoop/sd<%= ("a".."z").to_a[i] %> --fstype=ext3 --asprimary --size=1 --grow --ondisk=sd<%= ("a".."z").to_a[i] %> --fsoptions="defaults"
 <% end %>
-<% else %>
-<%if disks_count.to_i == 2 %>
+<% elsif disks_count.to_i == 2 and @software_raid == 'true' %>
 part raid.01 --asprimary --size=1 --grow --ondisk=sda
 part raid.02 --asprimary --size=1 --grow --ondisk=sdb
 raid / --fstype=ext4 --level=1 --device=md0 raid.01 raid.02
+<% elsif disks_count.to_i == 2 and @software_raid == 'false' %>
+part / --fstype=ext4 --asprimary --size=1 --grow --ondisk=sda
+<% elsif disks_count.to_i > 2 %>
+part / --fstype=ext4 --asprimary --size=1 --grow --ondisk=sda
 <% else %>
 part / --fstype=ext4 --asprimary --size=1 --grow
 <% end %>
-<% end %>
+
 # reboot automatically
 reboot
 

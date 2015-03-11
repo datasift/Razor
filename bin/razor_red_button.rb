@@ -157,11 +157,17 @@ else
 end
 
 print 'Checking model...'
-model_name = config[:hadoop] == 'true' ? config[:os]+'_hdp' : config[:os]
+if config[:hadoop] == 'true'
+  model_name = config[:os]+'_hdp'
+elsif config[:software_raid] == 'false'
+  model_name = config[:os]+'_nsr'
+else
+  model_name = config[:os]
+end
 if model_uuid = get_object_uuid(razor_api,'model','label',model_name)
   puts '...model exists '+putsok
 else
-  puts "...model #{putscyan(config[:os])} doesn't exist in razor "+ putserror
+  puts "...model #{putscyan(model_name)} doesn't exist in razor "+ putserror
   exit 1
 end
 
