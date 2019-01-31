@@ -1,0 +1,66 @@
+#!/bin/bash
+# Kickstart for RHEL/CentOS 7
+# see: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-kickstart-installations
+
+install
+url --url=http://<%= config.image_svc_host %>:<%= config.image_svc_port %>/razor/image/os/<%= @image_uuid %>
+text
+lang en_US.UTF-8
+keyboard uk
+#authconfig --enableshadow --passalgo=sha512 --enablefingerprint
+authconfig --enableshadow --passalgo=sha512
+rootpw <%= @root_password %>
+network --hostname <%= hostname %>
+firewall --service=ssh
+selinux --disabled
+timezone --utc UTC
+#bootloader --location=mbr --driveorder=sda --append=crashkernel=auto rhgb quiet
+bootloader --location=mbr --driveorder=sda --append="console=tty0 console=ttyS0,115200n8 crashkernel=auto"
+# The following is the partition information you requested
+# Note that any partitions you deleted are not expressed
+# here so unless you clear all partitions first, this is
+# not guaranteed to work
+zerombr
+clearpart --all --initlabel
+
+<% if @hadoop == 'true' %>
+part / --fstype=ext4 --asprimary --size=40000 --ondisk=sda
+<% disks_count.to_i.times do |i| %>
+part /hadoop/sd<%= ("a".."z").to_a[i] %> --fstype=ext3 --asprimary --size=1 --grow --ondisk=sd<%= ("a".."z").to_a[i] %> --fsoptions="defaults"
+<% end %>
+<% elsif disks_count.to_i == 2 and @software_raid == 'true' %>
+part raid.01 --asprimary --size=1 --grow --ondisk=sda
+part raid.02 --asprimary --size=1 --grow --ondisk=sdb
+raid / --fstype=ext4 --level=1 --device=md0 raid.01 raid.02
+<% elsif disks_count.to_i == 2 and @software_raid == 'false' %>
+part / --fstype=ext4 --asprimary --size=1 --grow --ondisk=sda
+<% elsif disks_count.to_i > 2 %>
+part / --fstype=ext4 --asprimary --size=1 --grow --ondisk=sda
+<% else %>
+part / --fstype=ext4 --asprimary --size=1 --grow
+<% end %>
+
+# reboot automatically
+reboot
+
+# followig is MINIMAL https://partner-bugzilla.redhat.com/show_bug.cgi?id=593309
+%packages
+@core
+
+%end
+
+%post --log=/root/razor-post.log
+# set the text console
+# sed -i 's/rhgb quiet/console=tty0 console=ttyS0,115200n8/' /etc/default/gru
+
+<% if @hadoop == 'true' %>
+sed -i '/hadoop/s/[0-9] [0-9]$/0 0/g' /etc/fstab
+<% end %>
+curl <%= api_svc_uri %>/policy/callback/<%= policy_uuid %>/kickstart/end
+curl -o /tmp/razor_postinstall.sh <%= api_svc_uri %>/policy/callback/<%= policy_uuid %>/postinstall/inject
+df -h
+echo bash /tmp/razor_postinstall.sh >> /etc/rc.local
+chmod +x /etc/rc.d/rc.local
+chmod +x /tmp/razor_postinstall.sh
+############
+%end
