@@ -42,7 +42,7 @@ function respondWithFile(path, res, req) {
         try {
             var start_offset;
             var end_offset;
-            var mimetype = mime.lookup(path);
+            var mimetype = mime.getType(path);
             var stat = fs.statSync(path);
 
             if (req.headers['range'] != undefined) {
