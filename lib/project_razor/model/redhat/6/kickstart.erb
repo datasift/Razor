@@ -12,7 +12,7 @@ network --hostname <%= hostname %>
 firewall --service=ssh
 authconfig --enableshadow --passalgo=sha512 --enablefingerprint
 selinux --disabled
-timezone --utc Europe/London
+timezone --utc UTC
 bootloader --location=mbr --driveorder=sda --append=crashkernel=auto rhgb quiet
 # The following is the partition information you requested
 # Note that any partitions you deleted are not expressed
@@ -53,6 +53,6 @@ sed -i '/hadoop/s/[0-9] [0-9]$/0 0/g' /etc/fstab
 <% end %>
 curl <%= api_svc_uri %>/policy/callback/<%= policy_uuid %>/kickstart/end
 curl -o /tmp/razor_postinstall.sh <%= api_svc_uri %>/policy/callback/<%= policy_uuid %>/postinstall/inject
-echo bash /tmp/razor_postinstall.sh >> /etc/rc.local
+echo bash /tmp/razor_postinstall.sh >> /etc/rc.d/rc.local
 chmod +x /tmp/razor_postinstall.sh
 ############
